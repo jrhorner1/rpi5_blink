@@ -18,31 +18,31 @@ int main(void) {
 
     // open the chip
     chip = gpiod_chip_open(CHIP_PATH);
-	if (!chip)
+    if (!chip)
     {
         printf("Failed to open chip");
-		return EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
 
     // create new line settings
     settings = gpiod_line_settings_new();
-	if (!settings)
-		goto close_chip;
+    if (!settings)
+        goto close_chip;
 
     // set the GPIO direction as an output
     gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_OUTPUT);
     // set the initial output value
-	gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_ACTIVE);
+    gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_ACTIVE);
 
     // create a new line config
     line_conf = gpiod_line_config_new();
-	if (!line_conf)
-		goto free_settings;
+    if (!line_conf)
+        goto free_settings;
 
     // add the line settings to the line config
     int ret = gpiod_line_config_add_line_settings(line_conf, &offset, 1, settings);
-	if (ret)
-		goto free_line_conf;
+    if (ret)
+        goto free_line_conf;
 
     // create a new request config 
     req_conf = gpiod_request_config_new();
@@ -53,27 +53,27 @@ int main(void) {
     gpiod_request_config_set_consumer(req_conf, "blink");
 
     // make the request using the chip, request config, and line config
-	request = gpiod_chip_request_lines(chip, req_conf, line_conf);
+    request = gpiod_chip_request_lines(chip, req_conf, line_conf);
 
     // clear out the request config
-	gpiod_request_config_free(req_conf);
+    gpiod_request_config_free(req_conf);
 
 free_line_conf:
     // clear out the line config
-	gpiod_line_config_free(line_conf);
+    gpiod_line_config_free(line_conf);
 
 free_settings:
     // clear out the line settings
-	gpiod_line_settings_free(settings);
+    gpiod_line_settings_free(settings);
 
 close_chip:
     // close the chip
-	gpiod_chip_close(chip);
+    gpiod_chip_close(chip);
 
     if (!request) {
-		printf("failed to request line\n");
-		return EXIT_FAILURE;
-	}
+        printf("failed to request line\n");
+        return EXIT_FAILURE;
+    }
 
     // blink the led ten times
     for (int i = 0; i < 10; i++) 
